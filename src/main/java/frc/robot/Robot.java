@@ -12,6 +12,7 @@ import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.proto.Trajectory;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
@@ -58,7 +59,7 @@ public class Robot extends TimedRobot {
     orchestra.addInstrument(motor1);
     orchestra.addInstrument(motor2);
 
-    orchestra.loadMusic("neverGonna.chrp");
+    orchestra.loadMusic("funnyCalifornia.chrp");
 
     //limiter = new SlewRateLimiter(1);
   }
@@ -78,36 +79,7 @@ public class Robot extends TimedRobot {
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
 
-    double power = Math.signum(stick.getX()) * Math.abs(Math.pow(stick.getX(),3));
-
-    double reversed =  (stick.getRawButton(2)) ? 1:-1;
-
-    //double slewPower = limiter.calculate(power);
-    if(stick.getPOV() == 0){
-       motor1.setControl(request.withOutput(1 * reversed));
-    }
-
-    else if(stick.getPOV() == 90){
-      motor1.setControl(request.withOutput(0.25 * reversed));
-    }
-
-    else if(stick.getPOV() == 270){
-      motor1.setControl(request.withOutput(0.5 * reversed));
-    }
-
-    else if(stick.getPOV() == 180){ 
-      motor1.setControl(request.withOutput(0.1* reversed));
-    }
-
-    else{
-      motor1.setControl(request.withOutput(power));
-    }
-
-    if (stick.getRawButton(1)) {
-      orchestra.play();
-    } else {
-      orchestra.pause();
-    }
+    
     
   }
 
@@ -117,7 +89,13 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+     if (stick.getRawButton(1)) {
+      orchestra.play();
+    } else {
+      orchestra.pause();
+    }
+  }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
@@ -144,12 +122,39 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
 
-     orchestra.loadMusic("neverGonna.chrp");
+     orchestra.loadMusic("funnyCalifornia.chrp");
   }
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+
+    double power = Math.signum(stick.getX()) * Math.abs(Math.pow(stick.getX(),3));
+
+    double reversed =  (stick.getRawButton(2)) ? 1:-1;
+
+    //double slewPower = limiter.calculate(power);
+    if(stick.getPOV() == 0){
+       motor1.setControl(request.withOutput(1 * reversed));
+    }
+
+    else if(stick.getPOV() == 90){
+      motor1.setControl(request.withOutput(0.25 * reversed));
+    }
+
+    else if(stick.getPOV() == 270){
+      motor1.setControl(request.withOutput(0.5 * reversed));
+    }
+
+    else if(stick.getPOV() == 180){ 
+      motor1.setControl(request.withOutput(0.1* reversed));
+    }
+
+    else{
+      motor1.setControl(request.withOutput(power));
+    }
+
+  }
 
   @Override
   public void testInit() {
