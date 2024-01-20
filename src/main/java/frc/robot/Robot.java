@@ -17,6 +17,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.proto.Trajectory;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -45,6 +46,8 @@ public class Robot extends TimedRobot {
   private Slot0Configs motor2Configs;
 
   private double maxRPS = 100;
+
+  private double setpointRPM = 0;
 
   private VelocityVoltage request = new VelocityVoltage(0);
 
@@ -82,7 +85,8 @@ public class Robot extends TimedRobot {
 
     orchestra.loadMusic("funnyCalifornia.chrp");
 
-    // limiter = new SlewRateLimiter(1);
+    Preferences.setDouble("RPM", setpointRPM);
+
   }
 
   /**
@@ -160,6 +164,8 @@ public class Robot extends TimedRobot {
 
     double percent = 0;// = Math.signum(stick.getX()) * Math.abs(Math.pow(stick.getX(), 3));
 
+    setpointRPM = Preferences.getDouble("RPM", 0) / 90;
+
     double reversed = (stick.getRawButton(2)) ? -1 : 1;
     if (stick.getPOV() == -1) {
       motor1.setControl(new VoltageOut(0));
@@ -169,27 +175,26 @@ public class Robot extends TimedRobot {
     else {
       // double slewPower = limiter.calculate(power);
       if (stick.getPOV() == 0) {
-        percent = 0.95;
+        motor1.setControl(request.withVelocity(setpointRPM));
+        motor2.setControl(request.withVelocity(setpointRPM));
       }
 
-      else if (stick.getPOV() == 90) {
-        percent = 0.75;
-      }
+      // else if (stick.getPOV() == 90) {
+      // percent = 0.75;
+      // }
 
-      else if (stick.getPOV() == 270) {
-        percent = 0.6;
-      }
+      // else if (stick.getPOV() == 270) {
+      // percent = 0.6;
+      // }
 
-      else if (stick.getPOV() == 180) {
-        percent = 0.22222;
-      }
+      // else if (stick.getPOV() == 180) {
+      // percent = 0.22222;
+      // }
 
-      else {
-        percent = 0;
-      }
+      // else {
+      // percent = 0;
+      // }
 
-      motor1.setControl(request.withVelocity(maxRPS * percent));
-      motor2.setControl(request.withVelocity(maxRPS * percent));
     }
 
   }
